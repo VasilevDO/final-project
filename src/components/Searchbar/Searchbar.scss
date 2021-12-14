@@ -1,0 +1,8 @@
+@import '../../pwnzf/pwnzf.scss';
+
+.searchbar {
+     > *:not(:last-child) {
+        margin-right:10px;
+     }
+     @include pwnz-f-c;
+}

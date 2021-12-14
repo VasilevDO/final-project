@@ -1,0 +1,111 @@
+//header
+$header-height:60px;
+$header-bg-color: burlywood;
+
+//body
+$main-body-color:rgb(242, 253, 253);
+
+//width params
+$width1920: 1920px;
+$width1366: 1366px;
+$width768: 768px;
+$width-min: 320px;
+
+$width-big-min:1366px;
+$width-avg-min:768px;
+
+//pokemons list rows
+$pokemons-list-rows-max: 6;
+
+//pokemon cards
+$pokemon-card-width-basic: 200px;
+$pokemon-card-width-small: 150px;
+
+//pokemon images
+$pokemon-image-width-basic: 400px;
+$pokemon-image-height-basic: 400px;
+
+//loader
+$loader-z-index:99;
+
+//animation
+$animation-time-basic: 0.3s;
+$transition-basic: $animation-time-basic ease-in-out;
+
+//borders
+$border-color-basic:lightgray;
+$border-size-basic:1px;
+$border-size-bold:2px;
+$border-basic: $border-size-basic solid $border-color-basic;
+$border-bold: $border-size-bold solid $border-color-basic;
+
+//box-shadows
+$box-shadow-basic:
+    1px 0 0 0 $border-color-basic, 
+    0 1px 0 0 $border-color-basic, 
+    1px 1px 0 0 $border-color-basic,   /* Just to fix the corner */
+    1px 0 0 0 $border-color-basic inset, 
+    0 1px 0 0 $border-color-basic inset;
+
+
+
+$nav-button-color: rgb(143, 153, 153);
+
+$main-text-color: rgb(27, 27, 27);
+
+$hover-filter: brightness(.9);
+
+$main-button-color: rgb(59, 230, 230);
+$main-button-border-radius: 4px;
+$main-button-border: 1px solid gray;
+$main-button-border-active:2px solid gray;
+$main-button-box-shadow: 0px 0px 0px 1px rgba(34, 60, 80, 0.8);
+$main-button-box-shadow-active: 0px 0px 0px 1px rgba(34, 60, 80, 0.8) inset;
+
+@mixin symbol-click {
+    transform: scale(0.9);
+}
+
+@keyframes spin360 { 
+    0% { 
+        -webkit-transform: rotate(0deg); 
+        transform:rotate(0deg);
+    } 
+    40% { 
+        -webkit-transform: rotate(390deg); 
+        transform:rotate(390deg);
+    } 
+    50% { 
+        -webkit-transform: rotate(360deg); 
+        transform:rotate(360deg);
+    } 
+    90% { 
+        -webkit-transform: rotate(-30deg); 
+        transform:rotate(-30deg); 
+    } 
+    100% { 
+        -webkit-transform: rotate(0deg); 
+        transform:rotate(0deg); 
+    } 
+}
+
+@keyframes height-fade-out {
+    0% {
+        max-height: 500px;
+    }
+    100% {
+        max-height: 0;
+        display:none;
+        margin:0;
+    }
+
+}
+
+@keyframes height-fade-in {
+    0% {
+        max-height: 0;
+    }
+    100% {
+        max-height: 500px;
+    }
+}

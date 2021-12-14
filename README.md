@@ -1,3 +1,11 @@
+1) npm i
+2) make a cup of tea/coffee
+3) npm run build
+4) ./dist/index.html
+5) enjoy
+=)
+
+
 # Final project
 
 Необходимо создать приложение `pokedex`.

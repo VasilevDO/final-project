@@ -1,0 +1,26 @@
+@import './consts.scss';
+
+.app {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    height:100%;
+    .main-container {
+        flex-grow: 1;
+        width:100%;
+    }
+}
+
+@media screen and (min-width:$width-avg-min) {
+    .main-container {
+        padding:10px;
+    }
+
+}
+
+@media screen and (max-width:$width-avg-min) {
+    .main-container {
+        padding:10px 5px;
+    }
+
+}

@@ -1,0 +1,36 @@
+@import '../../consts.scss';
+
+.navbar {
+    height:100%;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    > * {
+        height:100%;
+        > * {
+            height:inherit;
+        }
+    }
+    .navbar-main-nav {
+        background-color: $header-bg-color;
+    }
+}
+
+@media screen and (min-width:$width-avg-min) {
+    .navbar-hamburger-menu {
+        display:none;
+    }
+    .navbar-main-nav {
+        display:block;
+    }
+}
+
+@media screen and (max-width:$width-avg-min) {
+    .navbar-hamburger-menu {
+        display:block;
+    }
+    .navbar-main-nav {
+        display:none;
+    }
+}
+

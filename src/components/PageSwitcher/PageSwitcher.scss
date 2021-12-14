@@ -1,0 +1,49 @@
+@import '../../consts.scss';
+
+.page-switcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    border:$border-basic;
+    button {
+        border:none;
+        display: inline-block;
+        user-select: none;
+        text-align: center;
+        height:2em;
+        width:3em;
+        &.inactive {
+            cursor: default
+        }
+        &:disabled {
+            cursor:default;
+        }
+        &:hover {
+            filter:$hover-filter;
+        }
+        &:active:not(.inactive) {
+            transform: scale(0.9);
+        }
+
+    }
+    .current {
+        font-weight: bold;
+        border:$border-bold;
+    }
+    &.sub {
+        background-color: $main-body-color;
+        border:2px solid gray;
+    }
+} 
+
+
+@media screen and (max-width:$width-avg-min) {
+    .page-switcher {
+        button {
+            width:2em;
+        }
+    }
+
+    
+}

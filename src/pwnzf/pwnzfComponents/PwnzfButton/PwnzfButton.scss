@@ -1,0 +1,15 @@
+@import '../../../consts.scss';
+
+.pwnzfButton {
+    background-color:$main-button-color;
+    border:none;
+    box-shadow: $main-button-box-shadow;
+    padding:5px 10px;
+    cursor: pointer;
+    &:hover {
+        filter: $hover-filter;
+    }
+    &:active {
+        box-shadow: $main-button-box-shadow-active;
+    }
+}

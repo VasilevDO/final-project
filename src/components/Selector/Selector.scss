@@ -1,0 +1,7 @@
+@import '../../consts.scss';
+
+.selector {
+    > *:not(:last-child) {
+        margin-right:5px;
+    }
+}

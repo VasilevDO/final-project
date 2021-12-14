@@ -1,0 +1,132 @@
+@import '../../pwnzf/pwnzf.scss';
+@import '../../consts.scss';
+
+.pokemons-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    position: relative;
+    > *:not(:first-child) {
+        margin-top:10px;
+    }
+    .controls {
+        width:100%;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border-top:$border-basic;
+        border-bottom: $border-basic;
+        padding: 5px 0;
+        > *:not(:last-child) {
+            margin-bottom:5px;
+        }
+        .controls-static {
+            width:100%;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+        .controls-toggler {
+            button {
+                width:4em;
+            }
+            span {
+                display: inline-block;
+                transition: $transition-basic;
+            }
+            &.active {
+                span {
+                    transform: rotate(180deg);
+                }
+                
+            }
+        }
+        input {
+            width: 20ch;
+        }
+    }
+    .pokemons-list-cards {
+        width:100%;
+        .inner-wrapper {
+            display: grid;
+            justify-content: center;
+        }        
+    }
+    .sub {
+        position: fixed;
+        bottom:0;
+    }
+    .loading-screen {
+        height:100%;
+        width:100%;
+        position: absolute;
+        // background-color: lightcyan;
+        .loading-screen-wrapper {
+            position: fixed;
+            top:50vh;
+            transform: translate(0, -50%);
+        }
+    }
+}
+
+@media screen and (min-width:$width-avg-min) {
+    $pokemon-card-width:$pokemon-card-width-basic;
+    .pokemons-list {
+        .controls {
+            .controls-toggler {
+                display:none;
+            }
+            .controls-static {
+                max-width:calc($pokemon-card-width*$pokemons-list-rows-max);
+                display:flex;
+                flex-direction: row;
+            }
+        }
+        .pokemons-list-cards {
+            max-width:calc($pokemon-card-width*$pokemons-list-rows-max);
+            .inner-wrapper {
+                grid-template-columns: repeat(auto-fill, $pokemon-card-width $pokemon-card-width);
+            }
+        }
+    }
+    
+}
+
+@media screen and (max-width:$width-avg-min) {
+    $pokemon-card-width:$pokemon-card-width-small;
+    .pokemons-list {
+        .controls {
+            .controls-toggler {
+                display:flex;
+            }
+            .controls-static {
+                flex-direction: column;
+                >*:not(:last-child) {
+                    margin-bottom:5px;
+                }
+                &.open {
+                    animation: height-fade-in $animation-time-basic ease-in-out forwards;
+                }
+                &.close {
+                    animation: height-fade-out $animation-time-basic ease-in-out forwards;
+                }
+                &.initial {
+                    display:none;
+                }
+            }
+            
+
+        }
+        .pokemons-list-cards {
+            .inner-wrapper {
+                grid-template-columns: repeat(auto-fill, $pokemon-card-width-small);
+            }
+        }
+    }
+    
+}

@@ -1,0 +1,46 @@
+@import '../../consts.scss';
+
+.pokemon-card {
+    box-shadow:$box-shadow-basic;
+    width:$pokemon-card-width-basic;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding:10px;
+    text-align: center;
+    img {
+        object-fit: cover;
+        cursor: pointer;
+        width:100%;
+        &:hover {
+            filter:$hover-filter;
+        }
+    }
+    >*:not(:first-child) {
+        margin-top:10px;
+    }
+}
+
+@media screen and (max-width:$width-avg-min) {
+    $padding-small: 5px;
+    .pokemon-card {
+        width:$pokemon-card-width-small;
+        padding:$padding-small;
+        img {
+            height:calc($pokemon-card-width-small - $padding-small * 2)
+        }
+    }
+    
+}
+
+@media screen and (min-width:$width-avg-min) {
+    $padding-average: 10px;
+    .pokemon-card {
+        width:$pokemon-card-width-basic;
+        padding:$padding-average;
+        img {
+            height:calc($pokemon-card-width-basic - $padding-average * 2)
+        }
+    }  
+}

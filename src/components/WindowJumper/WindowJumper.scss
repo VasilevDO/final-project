@@ -1,0 +1,21 @@
+@import '../../consts.scss';
+
+.window-jumper {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $main-button-color;
+    border-radius: 4px;
+    position: fixed;
+    right:100px;
+    bottom:100px;
+    span {
+        user-select: none; /* Standard */
+        font-size:2rem;
+        padding:5px 10px;
+        cursor: pointer;
+        &:active {
+            @include symbol-click;
+        }
+    }
+}

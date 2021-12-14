@@ -1,0 +1,9 @@
+
+.search-field {
+    input {
+        min-width: 8ch;
+    }
+    >*:not(:last-child) {
+        margin-right:5px;
+    }
+}

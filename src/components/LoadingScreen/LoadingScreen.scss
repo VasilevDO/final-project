@@ -1,0 +1,16 @@
+@import '../../consts.scss';
+
+.loading-screen {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height:100%;
+    width:100%;
+    flex-grow:1;
+    img {
+        height:100px;
+        width:100px;
+        animation:spin360 3s linear infinite;
+        user-select: none; /* Standard */
+    }
+}

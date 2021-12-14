@@ -1,0 +1,14 @@
+.pwnzf-input {
+    height:2rem;
+}
+
+@mixin pwnz-f-c {
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin pwnz-cursor-pointer {
+    cursor:pointer;
+}

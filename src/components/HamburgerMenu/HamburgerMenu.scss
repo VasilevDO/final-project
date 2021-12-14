@@ -1,0 +1,79 @@
+@import '../../consts.scss';
+
+.hamburger-menu {
+        position: relative;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height:100%;
+        .hamburger-menu-button {
+            height:100%;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background-color: $header-bg-color;
+            span {
+                transition: $transition-basic;
+            }
+            &:hover {
+                filter: $hover-filter;
+                span:first-child {
+                    transform: translate(0,-100%);
+                }
+                span:last-child {
+                    transform: translate(0,100%);
+                }
+            }
+            .hamburger-menu-lines {
+                padding: 5px;
+                display:flex;
+                flex-direction: column;
+                > span {
+                    display: inline-block;
+                    width:30px;
+                    height:3px;
+                    background-color:black;
+                    margin:4px 0;
+                }
+            }
+            &.opened {
+                span:first-child {    
+                    transform: translateY(11px) rotate(45deg) ;     
+                }
+                span:nth-child(2) {
+                  opacity:0;
+                }
+                span:last-child {
+                    transform: translateY(-11px) rotate(-45deg) ;  
+                }
+            }
+        }
+    
+    .hamburger-menu-items {
+        z-index:90;
+        position: absolute;
+        display:none;
+        top:100%;
+        right:0;
+        background-color: lavender;
+        padding:5px;
+        border:$border-basic;
+        transition: $transition-basic;
+        .nav-ul {
+            flex-direction: column;
+            li {
+                width:100%;
+                &:not(:last-child) {
+                    border-bottom:$border-basic;
+                }
+                a {
+                    width:100%;
+                    padding:10px 5px;
+                    
+                }
+            }
+        }
+    }
+  }
