@@ -25,6 +25,7 @@ const PokemonPage = () => {
 		if (pokemon && !pokemon.isLoaded) {
 			dispatch(getFullPokemons([pokemon]));
 		} else {
+			setLoading(false);
 			setPokemon(pokemon);
 		}
 	}, [all]);
@@ -53,39 +54,43 @@ const PokemonPage = () => {
 
 	return (
 		<div className="pokemon-page">
-			<div className="pokemon-page-inner">
-				<div className="pokemon-page-header">
-					<h1>{firstCharToUpperCase(pokemon.name)}</h1>
-					{pokemonInCollection
-						? <p>{caughtText}</p>
-						: null}
-				</div>
-				<div className="pokemon-page-card">
-					<table>
-						<tbody>
-							{tableArr.map((unit, index) => (
-								<tr key={index}>
-									<th>{firstCharToUpperCase(unit[0])}</th>
-									<td>{Array.isArray(unit[1])
-										? unit[1].map((subUnit, subIndex) => (<span key={subIndex}>{firstCharToUpperCase(subUnit).replace(/-/, ' ')}<br/></span>))
-										: firstCharToUpperCase(unit[1])
-									}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-					<img src={pokemon.picture} onLoad={() => setLoading(false)}/>
-				</div>
-				<div className="pokemon-page-controls">
-					<div>
-						<PwnzfButton text={backButtonText} action={() => navigate(-1)}></PwnzfButton>
+			{loading
+				? <LoadingScreen/>
+				: <>
+					<div className="pokemon-page-inner">
+						<div className="pokemon-page-header">
+							<h1>{firstCharToUpperCase(pokemon.name)}</h1>
+							{pokemonInCollection
+								? <p>{caughtText}</p>
+								: null}
+						</div>
+						<div className="pokemon-page-card">
+							<table>
+								<tbody>
+									{tableArr.map((unit, index) => (
+										<tr key={index}>
+											<th>{firstCharToUpperCase(unit[0])}</th>
+											<td>{Array.isArray(unit[1])
+												? unit[1].map((subUnit, subIndex) => (<span key={subIndex}>{firstCharToUpperCase(subUnit).replace(/-/, ' ')}<br/></span>))
+												: firstCharToUpperCase(unit[1])
+											}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+							<img src={pokemon.picture} onLoad={() => setLoading(false)}/>
+						</div>
+						<div className="pokemon-page-controls">
+							<div>
+								<PwnzfButton text={backButtonText} action={() => navigate(-1)}></PwnzfButton>
+							</div>
+							<div>
+								<PwnzfButton text={catchButtonText} action={handleCatchChange}></PwnzfButton>
+							</div>
+						</div>
 					</div>
-					<div>
-						<PwnzfButton text={catchButtonText} action={handleCatchChange}></PwnzfButton>
-					</div>
-				</div>
-				{loading ? <LoadingScreen/> : null}
-			</div>
+				</>
+			}
 		</div>
 	);
 };

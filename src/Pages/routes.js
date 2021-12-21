@@ -1,5 +1,6 @@
 import React from 'react';
 import {Routes, Route, Navigate} from 'react-router-dom';
+import RouteWrapper from '../components/RouteWrapper/RouteWrapper';
 import CollectionPage from './CollectionPage/CollectionPage';
 import PokemonPage from './PokemonPage/PokemonPage';
 import PokemonsPage from './PokemonsPage/PokemonsPage';
@@ -10,8 +11,10 @@ export const ROUTES_POKEMONS_POKEMON = ':pokemonName';
 
 const useRoutes = () => (
 	<Routes>
-		<Route path={ROUTES_POKEMONS_ALL} element={<PokemonsPage/>} />
-		<Route path={ROUTES_POKEMONS_POKEMON} element={<PokemonPage/>} />
+		<Route path={ROUTES_POKEMONS_ALL} element={<RouteWrapper/>}>
+			<Route index element={<PokemonsPage/>}/>
+			<Route path={ROUTES_POKEMONS_POKEMON} element={<PokemonPage/>} />
+		</Route>
 		<Route path={ROUTES_POKEMONS_COLLECTION} element={<CollectionPage/>} />
 		<Route path="*" element={<Navigate to={ROUTES_POKEMONS_ALL} />}/>
 	</Routes>

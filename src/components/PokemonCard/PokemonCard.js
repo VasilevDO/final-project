@@ -13,10 +13,10 @@ import {pokemonsCatchPokemon, pokemonsReleasePokemon} from '../../store/pokemons
 const PokemonCard = props => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const {pokemon, onReady, isCollected} = props;
+	const {pokemon, onReady = () => {}, isCollected} = props;
 
 	const navToPokemonPage = () => {
-		navigate(`/${pokemon.name}`);
+		navigate(`/pokemons/${pokemon.name}`);
 	};
 
 	const imgSrc = pokemon.picture;
@@ -44,8 +44,8 @@ const PokemonCard = props => {
 
 PokemonCard.propTypes = {
 	pokemon: PropTypes.object.isRequired,
-	onReady: PropTypes.func.isRequired,
 	isCollected: PropTypes.bool.isRequired,
+	onReady: PropTypes.func,
 };
 
 export default PokemonCard;

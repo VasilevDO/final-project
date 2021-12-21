@@ -1,15 +1,15 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
+import {useLocation, useNavigate} from 'react-router';
 
 import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
 import PokemonCard from '../../components/PokemonCard/PokemonCard';
 
 import './PokemonsList.scss';
 
-import {useLocation, useNavigate} from 'react-router';
 import {appChangeItemsPerPage} from '../../store/app/appActions';
-import {ITEMS_PER_PAGE_DEFAULT, ITEMS_PER_PAGE_OPTIONS, ITEMS_SORT_DEFAULT, ITEMS_SORT_OPTIONS, PAGE_NUMBER_DEFAULT} from '../../consts';
+import {ITEMS_PER_PAGE_DEFAULT, ITEMS_PER_PAGE_OPTIONS, ITEMS_SEARCH_OPTIONS, ITEMS_SORT_DEFAULT, ITEMS_SORT_OPTIONS, PAGE_NUMBER_DEFAULT} from '../../consts';
 
 import './PokemonsList.scss';
 import PageSwitcher from '../PageSwitcher/PageSwitcher';
@@ -20,114 +20,60 @@ import {getFullPokemons} from '../../store/pokemons/pokemonsActions';
 const PokemonsList = props => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const {search} = useLocation();
 	const controlsRef = useRef();
 	const controlsTogglerRef = useRef();
 
-	// Search options
-	const searchOps = {
-		sort: {
-			text: 'sortBy=',
-			regExp: /sortBy=\w+%\w+/,
-			defaultVal: ITEMS_SORT_DEFAULT,
-		},
-		pageNumber: {
-			text: 'pageNumber=',
-			regExp: /pageNumber=\d+/,
-			defaultVal: PAGE_NUMBER_DEFAULT,
-		},
-		itemsPerPage: {
-			text: 'itemsPerPage=',
-			regExp: /itemsPerPage=\d+/,
-			defaultVal: ITEMS_PER_PAGE_DEFAULT,
-		},
-		search: {
-			text: 'search=',
-			regExp: /search=\w+/,
-			defaultVal: '',
-		},
-	};
-
-	const [loading, setLoading] = useState(true);
-	const [readyCards, setReadyCards] = useState([]);
-
-	const {all, collection} = useSelector(state => state.pokemons);
-
 	const {isCollectedOnly} = props;
 
-	// Filter by search field
-	const searchByFromURL = search.match(searchOps.search.regExp)?.toString().split('=')[1];
-	const [searchBy, setSearchBy] = useState(searchByFromURL || '');
-	const filterBySearch = unit => String(unit.name).includes(searchBy) || String(unit.id).includes(searchBy);
-
-	// Sort
-	const sortedByFromURL = search.match(searchOps.sort.regExp)?.toString().split('=')[1].replace(/%/, ' ');
-
-	const [sortedBy, setSortedBy] = useState(ITEMS_SORT_OPTIONS.includes(sortedByFromURL) ? sortedByFromURL : ITEMS_SORT_DEFAULT);
-
-	// Items per page
-	const itemsPerPageFromURL = Number(search.match(searchOps.itemsPerPage.regExp)?.toString().split('=')[1]);
+	const {all, collection} = useSelector(state => state.pokemons);
 	const userItemsPerPage = useSelector(state => state.app.user.itemsPerPage);
-	const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS.includes(itemsPerPageFromURL) ? itemsPerPageFromURL : userItemsPerPage);
 
-	// PageNumber
-	const pageNumberFromURL = Number(search.match(searchOps.pageNumber.regExp)?.toString().split('=')[1]);
-
-	const [pokemonsList, setPokemonsList] = useState((isCollectedOnly ? all.filter(unit => collection.has(unit.id)) : all));
-
-	useEffect(() => {
-		setPokemonsList((isCollectedOnly ? all.filter(unit => collection.has(unit.id)) : all));
-	}, [all, collection]);
-
-	const filteredAll = searchBy ? pokemonsList.filter(filterBySearch) : pokemonsList;
-
-	filteredAll.sort(sortPokemons);
-
-	function sortPokemons(a, b) {
-		const [criteria, direction] = sortedBy.split(' ');
-		const koef = direction === 'asc' ? 1 : -1;
-		return a[criteria] > b[criteria] ? Number(koef) : -1 * koef;
-	}
-
-	const quantity = filteredAll.length;
-
+	const [loading, setLoading] = useState(true);
+	const [searchBy, setSearchBy] = useState('');
+	const [sortBy, setSortBy] = useState(ITEMS_SORT_DEFAULT);
+	const [itemsPerPage, setItemsPerPage] = useState(userItemsPerPage);
+	const [pageNumber, setPageNumber] = useState(1);
+	const [pokemonsList, setPokemonsList] = useState(isCollectedOnly ? all.filter(u => collection.has(u.id)) : all);
 	const [pokemonsToShow, setPokemonsToShow] = useState([]);
+	const [pagebarSticker, setPagebarSticker] = useState(false);
 
-	const pagesQuantity = Math.ceil(quantity / itemsPerPage) || 1;
-
-	const [pageNumber, setPageNumber] = useState(Math.min(pageNumberFromURL, pagesQuantity) || 1);
-
-	// Bottom page switcher start
-
-	const windowHeight = window.innerHeight
-	|| document.documentElement.clientHeight
-	|| document.body.clientHeight;
-
-	const appHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-	const [bottomPageSwitcher, setBottomPageSwitcher] = useState(appHeight > windowHeight);
-
-	useEffect(() => {
+	const checkBottomControls = useCallback(() => {
 		const windowHeight = window.innerHeight
-	|| document.documentElement.clientHeight
-	|| document.body.clientHeight;
+			|| document.documentElement.clientHeight
+			|| document.body.clientHeight;
 		const appHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-		setBottomPageSwitcher(appHeight > windowHeight);
-	});
+		return appHeight > windowHeight;
+	}, []);
 
-	// Bottom page switcher end
+	const [bottomPageSwitcher, setBottomPageSwitcher] = useState(checkBottomControls());
 
 	useEffect(() => {
-		setItemsPerPage(ITEMS_PER_PAGE_OPTIONS.includes(itemsPerPageFromURL) ? itemsPerPageFromURL : userItemsPerPage);
+		setItemsPerPage(userItemsPerPage);
 	}, [userItemsPerPage]);
 
 	useEffect(() => {
-		setLoading(true);
-		loadPokemonsData();
-	}, [pokemonsList, pageNumber, sortedBy, searchBy, itemsPerPage]);
+		const searchByFromURL = search.match(ITEMS_SEARCH_OPTIONS.search.regExp)?.toString().split('=')[1];
+		if (searchByFromURL) {
+			setSearchBy(searchByFromURL);
+		}
 
-	const [pagebarSticker, setPagebarSticker] = useState(false);
+		const sortByFromURL = search.match(ITEMS_SEARCH_OPTIONS.sort.regExp)?.toString().split('=')[1].replace(/%/, ' ');
+		if (sortByFromURL) {
+			setSortBy(sortByFromURL);
+		}
 
-	useEffect(() => {
+		const itemsPerPageFromURL = Number(search.match(ITEMS_SEARCH_OPTIONS.itemsPerPage.regExp)?.toString().split('=')[1]);
+		if (itemsPerPageFromURL) {
+			setItemsPerPage(itemsPerPageFromURL);
+		}
+
+		const pageNumberFromURL = Number(search.match(ITEMS_SEARCH_OPTIONS.pageNumber.regExp)?.toString().split('=')[1]);
+		if (pageNumberFromURL) {
+			setPageNumber(Math.min(pageNumberFromURL, Math.ceil(pokemonsList.length / itemsPerPageFromURL)));
+		}
+
 		const pagesbarStickerCheck = () => {
 			const pageSwitchers = document.querySelectorAll('.page-switcher:not(.sub)');
 
@@ -156,25 +102,72 @@ const PokemonsList = props => {
 	}, []);
 
 	useEffect(() => {
-		if (readyCards >= pokemonsToShow.length) {
-			setLoading(false);
+		const newPokemonsList = isCollectedOnly ? all.filter(unit => collection.has(unit.id)).filter(filterBySearch).sort(sortPokemons) : all.filter(filterBySearch).sort(sortPokemons);
+		const newPokemonsToShow = preparePokemonsToShow(newPokemonsList);
+		const pokemonsToLoad = newPokemonsToShow.filter(u => !u.isLoaded);
+		const maxPage = Math.ceil(newPokemonsList.length / itemsPerPage);
+		if (pageNumber > maxPage) {
+			setPageNumber(maxPage);
 		}
-	}, [readyCards]);
 
-	const handleReadyCard = () => {
-		setReadyCards(readyCards + 1);
-	};
+		setPokemonsList(newPokemonsList);
+
+		if (pokemonsToLoad.length) {
+			setLoading(true);
+			dispatch(getFullPokemons(pokemonsToLoad));
+		} else {
+			setLoading(false);
+			setPokemonsToShow(newPokemonsToShow);
+		}
+	}, [all, collection, searchBy, sortBy]);
+
+	useEffect(() => {
+		const newPokemonsToShow = preparePokemonsToShow(pokemonsList);
+		const pokemonsToLoad = newPokemonsToShow.filter(u => !u.isLoaded);
+		const maxPage = Math.ceil(pokemonsList.length / itemsPerPage);
+		if (pageNumber > maxPage) {
+			setPageNumber(maxPage);
+			return;
+		}
+
+		if (pokemonsToLoad.length) {
+			setLoading(true);
+			dispatch(getFullPokemons(pokemonsToLoad));
+		} else {
+			setLoading(false);
+			setPokemonsToShow(newPokemonsToShow);
+		}
+	}, [pageNumber, itemsPerPage]);
+
+	const preparePokemonsToShow = useCallback(arr => arr.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage), [itemsPerPage, pageNumber]);
+
+	const filterBySearch = useCallback(unit => String(unit.name).includes(searchBy) || String(unit.id).includes(searchBy), [searchBy]);
+
+	const sortPokemons = useCallback((a, b) => {
+		const [criteria, direction] = sortBy.split(' ');
+		const koef = direction === 'asc' ? 1 : -1;
+		return a[criteria] > b[criteria] ? Number(koef) : -1 * koef;
+	}, [sortBy]);
+
+	useEffect(() => {
+		if (checkBottomControls() !== bottomPageSwitcher) {
+			setBottomPageSwitcher(!bottomPageSwitcher);
+		}
+	});
 
 	const handleSortChange = newVal => {
 		if (loading) {
 			return;
 		}
 
-		const newSortedBy = ITEMS_SORT_OPTIONS.includes(newVal) ? newVal : ITEMS_SORT_DEFAULT;
-		if (newSortedBy !== sortedBy) {
-			const newSearch = createNewSearch(search, searchOps.sort, newSortedBy);
-			setSortedBy(newSortedBy);
-			navigate(newSearch);
+		const newSortBy = ITEMS_SORT_OPTIONS.includes(newVal) ? newVal : ITEMS_SORT_DEFAULT;
+		if (newSortBy !== sortBy) {
+			const newSearch = createNewSearch(search, ITEMS_SEARCH_OPTIONS.sort, newSortBy);
+			setSortBy(newSortBy);
+			navigate({
+				pathname: location.pathname,
+				search: newSearch,
+			});
 		}
 	};
 
@@ -185,9 +178,12 @@ const PokemonsList = props => {
 
 		const newPageNumber = Math.min(pagesQuantity, Number(num)) || PAGE_NUMBER_DEFAULT;
 		if (newPageNumber !== pageNumber) {
-			const newSearch = createNewSearch(search, searchOps.pageNumber, newPageNumber);
-			setPageNumber(newPageNumber);
-			navigate(newSearch);
+			const newSearch = createNewSearch(search, ITEMS_SEARCH_OPTIONS.pageNumber, newPageNumber);
+			setPageNumber(Math.min(newPageNumber, Math.ceil(pokemonsList.length / itemsPerPage)));
+			navigate({
+				pathname: location.pathname,
+				search: newSearch,
+			});
 		}
 	};
 
@@ -198,9 +194,12 @@ const PokemonsList = props => {
 
 		const newItemsPerPage = Number(newVal) || ITEMS_PER_PAGE_DEFAULT;
 		if (itemsPerPage !== newItemsPerPage) {
-			const newSearch = createNewSearch(search, searchOps.itemsPerPage, newItemsPerPage);
+			const newSearch = createNewSearch(search, ITEMS_SEARCH_OPTIONS.itemsPerPage, newItemsPerPage);
 			dispatch(appChangeItemsPerPage(newItemsPerPage));
-			navigate(newSearch);
+			navigate({
+				pathname: location.pathname,
+				search: newSearch,
+			});
 		}
 	};
 
@@ -211,13 +210,16 @@ const PokemonsList = props => {
 
 		const newSearchBy = inputVal || '';
 		if (newSearchBy !== searchBy) {
-			const newSearch = createNewSearch(search, searchOps.search, newSearchBy);
+			const newSearch = createNewSearch(search, ITEMS_SEARCH_OPTIONS.search, newSearchBy);
 			setSearchBy(newSearchBy);
-			navigate(newSearch);
+			navigate({
+				pathname: location.pathname,
+				search: newSearch,
+			});
 		}
 	};
 
-	const toggleControlsVisibility = () => {
+	const toggleControlsVisibility = useCallback(() => {
 		controlsRef.current.classList.remove('initial');
 		if (controlsRef.current.classList.contains('open')) {
 			controlsRef.current.classList.remove('open');
@@ -228,16 +230,16 @@ const PokemonsList = props => {
 			controlsRef.current.classList.remove('close');
 			controlsTogglerRef.current.classList.add('active');
 		}
-	};
+	}, []);
 
-	function createNewSearch(search, searchOp, newVal) {// Search from useLocation, search option, new value
-		const params = [...Object.keys(searchOps)].reduce((a, u) => {
-			if (searchOps[u] === searchOp) {
+	const createNewSearch = useCallback((search, searchOp, newVal) => {// Search from useLocation, search option, new value
+		const params = [...Object.keys(ITEMS_SEARCH_OPTIONS)].reduce((a, u) => {
+			if (ITEMS_SEARCH_OPTIONS[u] === searchOp) {
 				if (newVal !== searchOp.defaultVal) {
-					a[u] = `${searchOps[u].text}${newVal}`;
+					a[u] = `${ITEMS_SEARCH_OPTIONS[u].text}${newVal}`;
 				}
 			} else {
-				const match = search.match(searchOps[u].regExp)?.toString();
+				const match = search.match(ITEMS_SEARCH_OPTIONS[u].regExp)?.toString();
 				if (match) {
 					a[u] = match;
 				}
@@ -247,45 +249,9 @@ const PokemonsList = props => {
 		}, {});
 
 		return (Object.keys(params).length ? `?${[...Object.values(params)].join('&')}` : '').replace(/\s/, '%');
-	}
+	}, []);
 
-	function loadPokemonsData() {
-		const start = (pageNumber - 1) * itemsPerPage;
-		const end = start + itemsPerPage;
-		const pokemons = filteredAll.slice(start, end);
-		const pokemonsToLoad = pokemons.filter(unit => !unit.isLoaded);
-
-		if (pokemonsToLoad.length) {
-			setLoading(true);
-			dispatch(getFullPokemons(pokemonsToLoad));
-		} else {
-			let readyCards = 0;
-			pokemonsToShow.forEach(unit => {
-				if (pokemons.includes(unit)) {
-					readyCards += 1;
-				}
-			});
-			setPokemonsToShow(pokemons);
-			setReadyCards(readyCards);
-		}
-	}
-
-	// Async function loadPokemonsData() {
-	// 	const start = (pageNumber - 1) * itemsPerPage;
-	// 	const end = start + itemsPerPage;
-	// 	const pokemons = await Promise.all(filteredAll.slice(start, end).map(async unit => {
-	// 		await unit.load();
-	// 		return unit;
-	// 	}));
-	// 	let readyCards = 0;
-	// 	pokemonsToShow.forEach(unit => {
-	// 		if (pokemons.includes(unit)) {
-	// 			readyCards += 1;
-	// 		}
-	// 	});
-	// 	setPokemonsToShow(pokemons);
-	// 	setReadyCards(readyCards);
-	// }
+	const pagesQuantity = Math.ceil(pokemonsList.length / itemsPerPage) || 1;
 
 	return (
 		<div className="pokemons-list">
@@ -294,6 +260,7 @@ const PokemonsList = props => {
 					<SearchField
 						holder={'Enter name or id'}
 						maxLength={10}
+						key={searchBy}
 						initValue={searchBy}
 						action={handleSearchChange}
 						buttonText={'Search'}
@@ -304,10 +271,9 @@ const PokemonsList = props => {
 						action={navigateToPage}
 						buttonText={'Go'}
 					/>
-
 					<Selector
 						label={'Sort by:'}
-						initValue={sortedBy}
+						initValue={sortBy}
 						options={ITEMS_SORT_OPTIONS}
 						action={handleSortChange}
 					/>
@@ -334,7 +300,7 @@ const PokemonsList = props => {
 			<div className="pokemons-list-cards">
 				<div className="inner-wrapper">
 					{pokemonsToShow.map((unit, index) => (
-						<PokemonCard pokemon={unit} key={unit.name + index} onReady={handleReadyCard} isCollected={collection.has(unit.id)}/>
+						<PokemonCard pokemon={unit} key={unit.name + index} isCollected={collection.has(unit.id)}/>
 					))}
 				</div>
 			</div>
