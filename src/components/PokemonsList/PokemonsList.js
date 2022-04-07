@@ -27,6 +27,8 @@ const PokemonsList = props => {
 
 	const {isCollectedOnly} = props;
 
+	console.log(location);
+
 	const {all, collection} = useSelector(state => state.pokemons);
 	const userItemsPerPage = useSelector(state => state.app.user.itemsPerPage);
 
@@ -71,7 +73,7 @@ const PokemonsList = props => {
 
 		const pageNumberFromURL = Number(search.match(ITEMS_SEARCH_OPTIONS.pageNumber.regExp)?.toString().split('=')[1]);
 		if (pageNumberFromURL) {
-			setPageNumber(Math.min(pageNumberFromURL, Math.ceil(pokemonsList.length / itemsPerPageFromURL)));
+			setPageNumber(pageNumberFromURL);
 		}
 
 		const pagesbarStickerCheck = () => {
